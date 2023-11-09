@@ -96,4 +96,6 @@ defmodule Oban.Validation do
        "expected #{inspect(key)} to be a positive integer or :infinity, got: #{inspect(value)}"}
     end
   end
+
+  # Type Validators
 end

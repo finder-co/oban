@@ -441,9 +441,9 @@ defmodule Oban.Worker do
   end
 
   defp validate_opt!({:priority, priority}) do
-    unless is_integer(priority) and priority > -1 and priority < 4 do
+    unless is_integer(priority) and priority > -1 and priority < 10 do
       raise ArgumentError,
-            "expected :priority to be an integer from 0 to 3, got: #{inspect(priority)}"
+            "expected :priority to be an integer from 0 to 9, got: #{inspect(priority)}"
     end
   end
 
