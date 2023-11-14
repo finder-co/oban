@@ -185,7 +185,8 @@ defmodule Oban.Job do
     * `:max_attempts` — the maximum number of times a job can be retried if there are errors
       during execution
     * `:meta` — a map containing additional information about the job
-    * `:priority` — a numerical indicator from 0 to 3 of how important this job is relative to
+
+    * `:priority` — a numerical indicator from 0 to 9 of how important this job is relative to
       other jobs in the same queue. The lower the number, the higher priority the job.
     * `:queue` — a named queue to push the job into. Jobs may be pushed into any queue, regardless
       of whether jobs are currently being processed for the queue.
@@ -270,7 +271,7 @@ defmodule Oban.Job do
     |> validate_length(:queue, min: 1, max: 128)
     |> validate_length(:worker, min: 1, max: 128)
     |> validate_number(:max_attempts, greater_than: 0)
-    |> validate_number(:priority, greater_than: -1, less_than: 4)
+    |> validate_number(:priority, greater_than: -1, less_than: 10)
     |> validate_replace()
     |> check_constraint(:attempt, name: :attempt_range)
     |> check_constraint(:max_attempts, name: :positive_max_attempts)
@@ -296,15 +297,21 @@ defmodule Oban.Job do
 
   * `:scheduled`—Jobs inserted with `scheduled_at` in the future are `:scheduled`. After the
     `scheduled_at` time has ellapsed the `Oban.Plugins.Stager` will transition them to `:available`
+
   * `:available`—Jobs without a future `scheduled_at` timestamp are inserted as `:available` and may
     execute immediately
+
   * `:executing`—Available jobs may be ran, at which point they are `:executing`
+
   * `:retryable`—Jobs that fail and haven't exceeded their max attempts are transitiond to
     `:retryable` and rescheduled until after a backoff period. Once the backoff has ellapsed the
     `Oban.Plugins.Stager` will transition them back to `:available`
+
   * `:completed`—Jobs that finish executing succesfully are marked `:completed`
+
   * `:discarded`—Jobs that fail and exhaust their max attempts, or return a `:discard` tuple during
     execution, are marked `:discarded`
+
   * `:cancelled`—Jobs that are cancelled intentionally
 
   """

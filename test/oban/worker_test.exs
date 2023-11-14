@@ -136,8 +136,26 @@ defmodule Oban.WorkerTest do
 
   test "validating the priority provided to __using__" do
     assert_raise ArgumentError, ~r/expected :priority to be/, fn ->
+      defmodule NegativePriority do
+        use Oban.Worker, priority: -1
+
+        def perform(_), do: :ok
+      end
+    end
+
+    assert_raise ArgumentError, ~r/expected :priority to be/, fn ->
       defmodule InvalidPriority do
-        use Oban.Worker, priority: 11
+        use Oban.Worker, priority: 10
+
+        def perform(_), do: :ok
+      end
+    end
+  end
+
+  test "validating replace options provided to __using__" do
+    assert_raise ArgumentError, ~r/invalid value for :replace/, fn ->
+      defmodule InvalidReplace do
+        use Oban.Worker, replace: [unknown: [:thing]]
 
         def perform(_), do: :ok
       end
